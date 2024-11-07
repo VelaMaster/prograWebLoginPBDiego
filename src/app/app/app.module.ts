@@ -25,6 +25,16 @@ import { RadiobuttonModule } from '../radiobutton/radiobutton.module';
 import { RipplesModule } from '../ripples/ripples.module';
 import { SelectModule } from '../select/select.module';
 import { SidenavModule } from '../sidenav/sidenav.module';
+import { SlidetoggleModule } from '../slidetoggle/slidetoggle.module';
+import { SliderModule } from '../slider/slider.module';
+import { SnackbarModule } from '../snackbar/snackbar.module';
+import { SortheaderModule } from '../sortheader/sortheader.module';
+import { StepperModule } from '../stepper/stepper.module';
+import { TableModule } from '../table/table.module';
+import { TabsModule } from '../tabs/tabs.module';
+import { ToolbarModule } from '../toolbar/toolbar.module';
+import { TooltipModule } from '../tooltip/tooltip.module';
+import { TreeModule } from '../tree/tree.module';
 
 @NgModule({
   declarations: [],
@@ -55,6 +65,16 @@ import { SidenavModule } from '../sidenav/sidenav.module';
     RipplesModule,
     SelectModule,
     SidenavModule,
+    SlidetoggleModule,
+    SliderModule,
+    SnackbarModule,
+    SortheaderModule,
+    StepperModule,
+    TableModule,
+    TabsModule,
+    ToolbarModule,
+    TooltipModule,
+    TreeModule,
   ]
 })
 export class AppModule { }
