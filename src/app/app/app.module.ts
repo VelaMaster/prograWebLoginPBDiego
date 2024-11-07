@@ -14,6 +14,17 @@ import { DialogModule } from '../dialog/dialog.module';
 import { DividerModule } from '../divider/divider.module';
 import { ExpansionPanelModule } from '../expansion-panel/expansion-panel.module';
 import { FormfieldModule } from '../formfield/formfield.module';
+import { GridlistModule } from '../gridlist/gridlist.module';
+import { IconModule } from '../icon/icon.module';
+import { InputModule } from '../input/input.module';
+import { ListModule } from '../list/list.module';
+import { MenuModule } from '../menu/menu.module';
+import { PaginatorModule } from '../paginator/paginator.module';
+import { ProgressbarModule } from '../progressbar/progressbar.module';
+import { RadiobuttonModule } from '../radiobutton/radiobutton.module';
+import { RipplesModule } from '../ripples/ripples.module';
+import { SelectModule } from '../select/select.module';
+import { SidenavModule } from '../sidenav/sidenav.module';
 
 @NgModule({
   declarations: [],
@@ -33,6 +44,17 @@ import { FormfieldModule } from '../formfield/formfield.module';
     DividerModule,
     ExpansionPanelModule,
     FormfieldModule,
+    GridlistModule,
+    IconModule,
+    InputModule,
+    ListModule,
+    MenuModule,
+    PaginatorModule,
+    ProgressbarModule,
+    RadiobuttonModule,
+    RipplesModule,
+    SelectModule,
+    SidenavModule,
   ]
 })
 export class AppModule { }
