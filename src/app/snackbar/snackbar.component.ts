@@ -32,7 +32,7 @@ private _snackBar = inject(MatSnackBar);
 
 @Component({
   selector: 'snack-bar-annotated-component-example-snack',
-  templateUrl: './snackbar.component.html',
+  templateUrl: './snackbar.component.snack.html',
   styles: `
     :host {
       display: flex;

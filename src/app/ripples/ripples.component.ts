@@ -17,6 +17,6 @@ export class RipplesComponent {
   disabled = false;
   unbounded = false;
 
-  radius: number;
-  color: string;
+  radius!: number;
+  color!: string;
 }

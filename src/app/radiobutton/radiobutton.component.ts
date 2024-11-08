@@ -10,6 +10,6 @@ import {MatRadioModule} from '@angular/material/radio';
   styleUrl: './radiobutton.component.css'
 })
 export class RadiobuttonComponent {
-  favoriteSeason: string;
+  favoriteSeason!: string;
   seasons: string[] = ['Winter', 'Spring', 'Summer', 'Autumn'];
 }

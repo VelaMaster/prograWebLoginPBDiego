@@ -9,5 +9,4 @@ import {MatCommonModule} from '@angular/material/core';
   styleUrl: './core.component.css'
 })
 export class CoreComponent {
-
 }

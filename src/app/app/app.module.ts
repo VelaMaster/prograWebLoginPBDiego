@@ -1,6 +1,5 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { AutocompleteModule } from '../autocomplete/autocomplete.module';
 import { BadgeModule } from '../badge/badge.module';
 import { BottomSheetModule } from '../bottom-sheet/bottom-sheet.module';
 import { ButtonModule } from '../button/button.module';
@@ -35,12 +34,14 @@ import { TabsModule } from '../tabs/tabs.module';
 import { ToolbarModule } from '../toolbar/toolbar.module';
 import { TooltipModule } from '../tooltip/tooltip.module';
 import { TreeModule } from '../tree/tree.module';
+import { AppRoutingModule } from '../app-routing.module';
+import { AutocompleteAutoActiveFirstOptionExample } from '../autocomplete/autocomplete.module';
 
 @NgModule({
   declarations: [],
   imports: [
     CommonModule,
-    AutocompleteModule,
+    AutocompleteAutoActiveFirstOptionExample,
     BadgeModule,
     BottomSheetModule,
     ButtonModule,
@@ -75,6 +76,7 @@ import { TreeModule } from '../tree/tree.module';
     ToolbarModule,
     TooltipModule,
     TreeModule,
+    AppRoutingModule,
   ]
 })
 export class AppModule { }
