@@ -1,4 +1,40 @@
-<div class="welcome-container">
-  <h1>Bienvenido</h1>
-  <p>Consumo de APIS para login</p>
+<div class="container">
+  <button (click)="logout()" class="btn btn-danger">Cerrar Perfil</button>
+
+  <input type="text" [(ngModel)]="searchText" placeholder="Buscar..." class="form-control my-3" />
+
+  <table class="table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Nombre</th>
+        <th>Imagen</th>
+        <th>Estado</th>
+        <th>Especie</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let character of displayedCharacters; let i = index">
+        <td>{{ i + 1 + (currentComponentPage - 1) * pageSize }}</td>
+        <td>{{ character.name }}</td>
+        <td>
+          <img [src]="character.image" alt="{{ character.name }}" style="width: 50px; height: 50px;" />
+        </td>
+        <td>{{ character.status }}</td>
+        <td>{{ character.species }}</td>
+        <td>
+          <button class="btn btn-info" (click)="viewDetails(character)">👁️</button>
+          <button class="btn btn-warning" (click)="editCharacter(character)">✏️</button>
+          <button class="btn btn-danger" (click)="deleteCharacter(i)">🗑️</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="pagination">
+    <button class="btn btn-secondary" [disabled]="currentComponentPage === 1" (click)="goToPage(currentComponentPage - 1)">Anterior</button>
+    <span>Página {{ currentComponentPage }} de {{ totalComponentPages }}</span>
+    <button class="btn btn-secondary" [disabled]="currentComponentPage === totalComponentPages" (click)="goToPage(currentComponentPage + 1)">Siguiente</button>
+  </div>
 </div>

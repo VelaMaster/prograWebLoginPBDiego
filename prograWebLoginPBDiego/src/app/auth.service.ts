@@ -1,34 +1,37 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, catchError } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = 'http://localhost:3000/users';
+  private apiUrl = 'https://api.escuelajs.co/api/v1/auth/login';
 
   constructor(private http: HttpClient) {}
 
-  login(username: string, password: string): Observable<boolean> {
-    return this.http.get<any[]>(`${this.apiUrl}?username=${username}&password=${password}`)
+  login(email: string, password: string): Observable<boolean> {
+    return this.http.post<{ access_token: string }>(this.apiUrl, { email, password })
       .pipe(
-        map(users => {
-          if (users.length > 0) {
-            localStorage.setItem('user', JSON.stringify(users[0])); // Guarda el usuario en localStorage
+        map(response => {
+          if (response && response.access_token) {
+            localStorage.setItem('access_token', response.access_token);
             return true;
           }
           return false;
+        }),
+        catchError(() => {
+          return [false];
         })
       );
   }
 
   logout(): void {
-    localStorage.removeItem('user');
+    localStorage.removeItem('access_token');
   }
 
   isAuthenticated(): boolean {
-    return !!localStorage.getItem('user'); // Verifica si hay un usuario en localStorage
+    return !!localStorage.getItem('access_token');
   }
 }

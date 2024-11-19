@@ -1,68 +1,186 @@
-.welcome-container {
-  max-width: 800px;
-  margin: 100px auto;
-  text-align: center;
-  padding: 50px;
-  border-radius: 10px;
-  background-color: #e9f7ef;
-  box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.1);
+/* Contenedor principal */
+.container {
+  max-width: 1200px;
+  margin: 40px auto;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-.welcome-container h1 {
-  font-size: 3rem;
-  color: #2c3e50;
+/* Botones generales */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 12px;
+  margin: 2px;
+  border: 2px solid;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease, color 0.3s ease;
+  background-color: transparent; /* Fondo transparente por defecto */
+}
+
+/* Eliminar estilos predeterminados de Bootstrap */
+.btn-info,
+.btn-warning,
+.btn-danger,
+.btn-secondary {
+  color: inherit;
+}
+
+/* Botones específicos */
+.btn-danger {
+  border-color: #e74c3c;
+  color: #e74c3c;
+}
+
+.btn-danger:hover {
+  background-color: #e74c3c;
+  color: #fff;
+  transform: translateY(-2px);
+}
+
+.btn-info {
+  border-color: #3498db;
+  color: #3498db;
+}
+
+.btn-info:hover {
+  background-color: #3498db;
+  color: #fff;
+  transform: translateY(-2px);
+}
+
+.btn-warning {
+  border-color: #f1c40f;
+  color: #f1c40f;
+}
+
+.btn-warning:hover {
+  background-color: #f1c40f;
+  color: #fff;
+  transform: translateY(-2px);
+}
+
+.btn-secondary {
+  border-color: #95a5a6;
+  color: #95a5a6;
+}
+
+.btn-secondary:hover {
+  background-color: #95a5a6;
+  color: #fff;
+  transform: translateY(-2px);
+}
+
+/* Campo de búsqueda */
+.form-control {
+  width: 100%;
+  padding: 12px 20px;
+  margin: 8px 0 20px 0;
+  box-sizing: border-box;
+  border: 2px solid #ccc;
+  border-radius: 8px;
+  transition: border-color 0.3s ease;
+  font-size: 16px;
+}
+
+.form-control:focus {
+  border-color: #3498db;
+  outline: none;
+}
+
+/* Tabla de personajes */
+.table {
+  width: 100%;
+  border-collapse: collapse;
   margin-bottom: 20px;
 }
 
-.welcome-container p {
-  font-size: 1.5rem;
-  color: #34495e;
-  line-height: 1.8;
+.table thead {
+  background-color: #34495e;
+  color: #fff;
 }
-/* Estilos para el mensaje de error */
-.error-popup {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background-color: #f8d7da;
-  color: #721c24;
-  padding: 20px;
-  border: 1px solid #f5c6cb;
-  border-radius: 8px;
+
+.table th, .table td {
+  padding: 12px 15px;
   text-align: center;
-  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+  border-bottom: 1px solid #ddd;
 }
 
-.error-popup p {
-  margin: 0 0 10px;
+.table tbody tr:nth-child(even) {
+  background-color: #f2f2f2;
 }
 
-.error-popup button {
-  padding: 10px;
-  font-size: 1rem;
-  color: #721c24;
-  background-color: transparent;
-  border: none;
-  cursor: pointer;
+.table tbody tr:hover {
+  background-color: #e1f5fe;
 }
 
-.password-container {
+.table img {
+  border-radius: 50%;
+  transition: transform 0.3s ease;
+}
+
+.table img:hover {
+  transform: scale(1.1);
+}
+
+/* Paginación */
+.pagination {
   display: flex;
   align-items: center;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 20px;
 }
 
-.password-container button {
-  margin-left: 5px;
-  padding: 5px 10px;
-  font-size: 0.9rem;
-  color: #007bff;
-  background-color: transparent;
-  border: none;
-  cursor: pointer;
+.pagination span {
+  font-size: 16px;
+  color: #333;
 }
 
-.password-container button:hover {
-  color: #0056b3;
-  text-decoration: underline;
+/* Responsividad */
+@media (max-width: 768px) {
+  .table thead {
+    display: none;
+  }
+
+  .table, .table tbody, .table tr, .table td {
+    display: block;
+    width: 100%;
+  }
+
+  .table tr {
+    margin-bottom: 15px;
+    background-color: #fff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    padding: 10px;
+  }
+
+  .table td {
+    text-align: right;
+    padding-left: 50%;
+    position: relative;
+  }
+
+  .table td::before {
+    content: attr(data-label);
+    position: absolute;
+    left: 15px;
+    width: 45%;
+    padding-right: 10px;
+    font-weight: bold;
+    text-align: left;
+  }
+
+  /* Ajustar imágenes en dispositivos pequeños */
+  .table img {
+    width: 40px;
+    height: 40px;
+  }
 }
