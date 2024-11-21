@@ -1,8 +1,19 @@
-<div class="container">
-  <button (click)="logout()" class="btn btn-danger">Cerrar Perfil</button>
+<!-- inicio.component.html -->
 
+<div class="container">
+  <!-- Header con Información del Usuario y Botón de Cerrar Sesión -->
+  <div class="header d-flex justify-content-between align-items-center mb-4">
+    <div class="user-profile d-flex align-items-center">
+      <img [src]="profilePictureUrl" alt="Foto de Perfil" class="profile-picture me-3">
+      <span>{{ userName }}</span>
+    </div>
+    <button (click)="logout()" class="btn btn-danger">Cerrar Perfil</button>
+  </div>
+
+  <!-- Campo de Búsqueda -->
   <input type="text" [(ngModel)]="searchText" placeholder="Buscar..." class="form-control my-3" />
 
+  <!-- Tabla de Personajes -->
   <table class="table">
     <thead>
       <tr>
@@ -15,7 +26,7 @@
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let character of displayedCharacters; let i = index">
+      <tr *ngFor="let character of filteredCharacters; let i = index">
         <td>{{ i + 1 + (currentComponentPage - 1) * pageSize }}</td>
         <td>{{ character.name }}</td>
         <td>
@@ -24,17 +35,58 @@
         <td>{{ character.status }}</td>
         <td>{{ character.species }}</td>
         <td>
-          <button class="btn btn-info" (click)="viewDetails(character)">👁️</button>
-          <button class="btn btn-warning" (click)="editCharacter(character)">✏️</button>
-          <button class="btn btn-danger" (click)="deleteCharacter(i)">🗑️</button>
+          <button class="btn btn-action btn-info" (click)="openModal('view', character)">👁️</button>
+          <button class="btn btn-action btn-warning" (click)="openModal('edit', character)">✏️</button>
+          <button class="btn btn-action btn-danger" (click)="openModal('delete', character)">🗑️</button>
         </td>
       </tr>
     </tbody>
   </table>
 
-  <div class="pagination">
-    <button class="btn btn-secondary" [disabled]="currentComponentPage === 1" (click)="goToPage(currentComponentPage - 1)">Anterior</button>
-    <span>Página {{ currentComponentPage }} de {{ totalComponentPages }}</span>
-    <button class="btn btn-secondary" [disabled]="currentComponentPage === totalComponentPages" (click)="goToPage(currentComponentPage + 1)">Siguiente</button>
+  <!-- Paginación -->
+  <div class="pagination-container my-4">
+    <button class="btn btn-secondary me-2" [disabled]="currentComponentPage === 1" (click)="goToPage(currentComponentPage - 1)">Anterior</button>
+    <span class="pagination-info">Página {{ currentComponentPage }} de {{ totalComponentPages }}</span>
+    <button class="btn btn-secondary ms-2" [disabled]="currentComponentPage === totalComponentPages" (click)="goToPage(currentComponentPage + 1)">Siguiente</button>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal fade show d-block" *ngIf="showModal" style="background-color: rgba(0, 0, 0, 0.5);">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">
+            {{ modalAction === 'view' ? 'Detalles del Personaje' :
+               modalAction === 'edit' ? 'Editar Personaje' :
+               'Eliminar Personaje' }}
+          </h5>
+          <button type="button" class="btn-close" (click)="closeModal()"></button>
+        </div>
+        <div class="modal-body">
+          <div *ngIf="modalAction === 'view'">
+            <p><strong>Nombre:</strong> {{ selectedCharacter?.name }}</p>
+            <p><strong>Estado:</strong> {{ selectedCharacter?.status }}</p>
+            <p><strong>Especie:</strong> {{ selectedCharacter?.species }}</p>
+            <img [src]="selectedCharacter?.image" alt="{{ selectedCharacter?.name }}" style="width: 100px;">
+          </div>
+          <div *ngIf="modalAction === 'edit'">
+            <label>Nombre:</label>
+            <input [(ngModel)]="selectedCharacter!.name" class="form-control mb-2" />
+            <label>Estado:</label>
+            <input [(ngModel)]="selectedCharacter!.status" class="form-control mb-2" />
+            <label>Especie:</label>
+            <input [(ngModel)]="selectedCharacter!.species" class="form-control mb-2" />
+          </div>
+          <div *ngIf="modalAction === 'delete'">
+            <p>¿Estás seguro de que deseas eliminar el personaje <strong>{{ selectedCharacter?.name }}</strong>?</p>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="closeModal()">Cancelar</button>
+          <button *ngIf="modalAction === 'edit'" type="button" class="btn btn-primary" (click)="guardarCambios()">Guardar Cambios</button>
+          <button *ngIf="modalAction === 'delete'" type="button" class="btn btn-danger" (click)="deleteCharacter()">Eliminar</button>
+        </div>
+      </div>
+    </div>
   </div>
 </div>

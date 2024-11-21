@@ -1,5 +1,26 @@
+// inicio.component.ts
+
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { AuthService, User } from '../auth.service';
+import { Router } from '@angular/router';
+
+interface Character {
+  id: number;
+  name: string;
+  status: string;
+  species: string;
+  image: string;
+  // Agrega otros campos según la API
+}
+
+interface ApiResponse {
+  info: {
+    pages: number;
+    // Otros campos si es necesario
+  };
+  results: Character[];
+}
 
 @Component({
   selector: 'app-inicio',
@@ -7,49 +28,64 @@ import { HttpClient } from '@angular/common/http';
   styleUrls: ['./inicio.component.css']
 })
 export class InicioComponent implements OnInit {
-  allCharacters: any[] = []; // Todos los personajes cargados desde la API
-  displayedCharacters: any[] = []; // Personajes a mostrar en la tabla
-  currentApiPage: number = 1; // Página actual de la API
-  currentComponentPage: number = 1; // Página actual del componente (10 por página)
+  allCharacters: Character[] = [];
+  displayedCharacters: Character[] = [];
+  currentApiPage: number = 1;
+  currentComponentPage: number = 1;
   totalApiPages: number = 1;
   totalComponentPages: number = 1;
-  pageSize: number = 10; // Número de filas por página
+  pageSize: number = 10;
   searchText: string = '';
-  selectedCharacter: any = null;
+  showModal: boolean = false;
+  modalAction: 'view' | 'edit' | 'delete' | null = null;
+  selectedCharacter: Character | null = null;
 
-  constructor(private http: HttpClient) {}
+  // Propiedades para el usuario
+  userName: string = '';
+  profilePictureUrl: string = 'assets/default-profile-picture.jpg'; // Imagen por defecto
+
+  constructor(
+    private http: HttpClient,
+    private authService: AuthService,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
+    // Verificar si el usuario está autenticado
+    if (!this.authService.isAuthenticated()) {
+      this.router.navigate(['/login']);
+      return;
+    }
+
+    // Suscribirse al observable del usuario
+    this.authService.user$.subscribe(user => {
+      if (user) {
+        this.userName = user.name;
+        this.profilePictureUrl = user.avatar || 'assets/default-profile-picture.jpg';
+      }
+    });
+
     this.loadApiPage(this.currentApiPage);
   }
 
   loadApiPage(page: number): void {
     const url = `https://rickandmortyapi.com/api/character?page=${page}`;
-    this.http.get<any>(url).subscribe((response) => {
+    this.http.get<ApiResponse>(url).subscribe((response) => {
       this.allCharacters = response.results;
       this.totalApiPages = response.info.pages;
       this.calculateComponentPages();
       this.updateDisplayedCharacters();
+    }, error => {
+      console.error('Error al cargar los personajes:', error);
     });
   }
 
   calculateComponentPages(): void {
-    // Cada página de la API tiene 20 personajes, y queremos 10 por página del componente
-    // Por lo tanto, cada página de la API corresponde a 2 páginas del componente
     this.totalComponentPages = this.totalApiPages * 2;
   }
 
   updateDisplayedCharacters(): void {
-    // Determinar qué página de la API corresponde a la página actual del componente
     this.currentApiPage = Math.ceil(this.currentComponentPage / 2);
-
-    // Cargar la página de la API si no está cargada
-    if (!this.allCharacters || this.allCharacters.length === 0 || this.currentApiPage !== this.currentApiPage) {
-      this.loadApiPage(this.currentApiPage);
-      return;
-    }
-
-    // Calcular el índice de inicio y fin para la paginación interna
     const isFirstHalf = this.currentComponentPage % 2 !== 0;
     const startIndex = isFirstHalf ? 0 : 10;
     const endIndex = isFirstHalf ? 10 : 20;
@@ -59,31 +95,61 @@ export class InicioComponent implements OnInit {
 
   goToPage(page: number): void {
     if (page >= 1 && page <= this.totalComponentPages) {
+      const newApiPage = Math.ceil(page / 2);
+      if (newApiPage !== this.currentApiPage) {
+        this.currentApiPage = newApiPage;
+        this.loadApiPage(newApiPage);
+      }
       this.currentComponentPage = page;
       this.updateDisplayedCharacters();
     }
   }
 
-  logout(): void {
-    localStorage.removeItem('access_token');
-    window.location.href = '/';
+  openModal(action: 'view' | 'edit' | 'delete', character: Character): void {
+    this.modalAction = action;
+    this.selectedCharacter = { ...character }; // Clonar para evitar mutaciones directas
+    this.showModal = true;
   }
 
-  viewDetails(character: any): void {
-    this.selectedCharacter = character;
-    // Lógica para abrir un modal o mostrar información del personaje
-    alert(`Detalles del personaje:\n\nNombre: ${character.name}\nEstado: ${character.status}\nEspecie: ${character.species}`);
+  closeModal(): void {
+    this.modalAction = null;
+    this.selectedCharacter = null;
+    this.showModal = false;
   }
 
-  editCharacter(character: any): void {
-    this.selectedCharacter = character;
-    // Lógica para abrir un modal de edición (simulada aquí con alert)
-    alert(`Editar personaje:\n\nNombre: ${character.name}\nEstado: ${character.status}\nEspecie: ${character.species}`);
-  }
-
-  deleteCharacter(index: number): void {
-    if (confirm('¿Estás seguro de que deseas eliminar este personaje?')) {
-      this.displayedCharacters.splice(index, 1);
+  guardarCambios(): void {
+    if (this.modalAction === 'edit' && this.selectedCharacter) {
+      const index = this.allCharacters.findIndex(char => char.id === this.selectedCharacter!.id);
+      if (index !== -1) {
+        this.allCharacters[index] = { ...this.selectedCharacter };
+        this.updateDisplayedCharacters();
+        this.closeModal();
+      }
     }
+  }
+
+  deleteCharacter(): void {
+    if (this.modalAction === 'delete' && this.selectedCharacter) {
+      this.allCharacters = this.allCharacters.filter(
+        (char) => char.id !== this.selectedCharacter!.id
+      );
+      this.updateDisplayedCharacters();
+      this.closeModal();
+    }
+  }
+
+  logout(): void {
+    this.authService.logout();
+    this.router.navigate(['/login']);
+  }
+
+  // Getter para filtrar personajes según el texto de búsqueda
+  get filteredCharacters(): Character[] {
+    if (!this.searchText) {
+      return this.displayedCharacters;
+    }
+    return this.displayedCharacters.filter(character =>
+      character.name.toLowerCase().includes(this.searchText.toLowerCase())
+    );
   }
 }
