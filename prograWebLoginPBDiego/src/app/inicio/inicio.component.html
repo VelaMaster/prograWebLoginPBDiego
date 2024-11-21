@@ -1,7 +1,7 @@
-<!-- inicio.component.html -->
+<!-- src/app/inicio/inicio.component.html -->
 
 <div class="container">
-  <!-- Header con Información del Usuario y Botón de Cerrar Sesión -->
+  <!-- Header -->
   <div class="header d-flex justify-content-between align-items-center mb-4">
     <div class="user-profile d-flex align-items-center">
       <img [src]="profilePictureUrl" alt="Foto de Perfil" class="profile-picture me-3">
@@ -10,8 +10,11 @@
     <button (click)="logout()" class="btn btn-danger">Cerrar Perfil</button>
   </div>
 
-  <!-- Campo de Búsqueda -->
-  <input type="text" [(ngModel)]="searchText" placeholder="Buscar..." class="form-control my-3" />
+  <!-- Buscador -->
+  <app-search (searchTextChanged)="onSearchTextChanged($event)"></app-search>
+
+  <!-- Filtros -->
+  <app-filter (filtersChanged)="onFiltersChanged($event)"></app-filter>
 
   <!-- Tabla de Personajes -->
   <table class="table">
@@ -26,8 +29,8 @@
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let character of filteredCharacters; let i = index">
-        <td>{{ i + 1 + (currentComponentPage - 1) * pageSize }}</td>
+      <tr *ngFor="let character of paginatedCharacters; let i = index">
+        <td>{{ ((currentPage - 1) * pageSize) + i + 1 }}</td>
         <td>{{ character.name }}</td>
         <td>
           <img [src]="character.image" alt="{{ character.name }}" style="width: 50px; height: 50px;" />
@@ -44,10 +47,10 @@
   </table>
 
   <!-- Paginación -->
-  <div class="pagination-container my-4">
-    <button class="btn btn-secondary me-2" [disabled]="currentComponentPage === 1" (click)="goToPage(currentComponentPage - 1)">Anterior</button>
-    <span class="pagination-info">Página {{ currentComponentPage }} de {{ totalComponentPages }}</span>
-    <button class="btn btn-secondary ms-2" [disabled]="currentComponentPage === totalComponentPages" (click)="goToPage(currentComponentPage + 1)">Siguiente</button>
+  <div class="pagination-container my-4 d-flex justify-content-center align-items-center">
+    <button class="btn btn-secondary me-2" [disabled]="currentPage === 1" (click)="goToPage(currentPage - 1)">Anterior</button>
+    <span class="pagination-info">Página {{ currentPage }} de {{ totalPages }}</span>
+    <button class="btn btn-secondary ms-2" [disabled]="currentPage === totalPages" (click)="goToPage(currentPage + 1)">Siguiente</button>
   </div>
 
   <!-- Modal -->

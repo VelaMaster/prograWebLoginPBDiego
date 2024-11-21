@@ -1,3 +1,5 @@
+// login.component.ts
+
 import { Component } from '@angular/core';
 import { AuthService } from '../auth.service';
 import { Router } from '@angular/router';
@@ -8,7 +10,7 @@ import { Router } from '@angular/router';
   styleUrls: ['./login.component.css']
 })
 export class LoginComponent {
-  username: string = '';
+  email: string = ''; // Cambiado de 'username' a 'email'
   password: string = '';
   showErrorMessage: boolean = false;
   showPassword: boolean = false;
@@ -16,7 +18,7 @@ export class LoginComponent {
   constructor(private authService: AuthService, private router: Router) {}
 
   onSubmit(): void {
-    this.authService.login(this.username, this.password).subscribe(isAuthenticated => {
+    this.authService.login(this.email, this.password).subscribe(isAuthenticated => {
       if (isAuthenticated) {
         this.router.navigate(['/inicio']); // Redirige a la ruta de inicio
       } else {

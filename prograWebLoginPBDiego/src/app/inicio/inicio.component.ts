@@ -1,26 +1,10 @@
-// inicio.component.ts
+// src/app/inicio/inicio.component.ts
 
 import { Component, OnInit } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { CharacterService } from '../character.service';
 import { AuthService, User } from '../auth.service';
 import { Router } from '@angular/router';
-
-interface Character {
-  id: number;
-  name: string;
-  status: string;
-  species: string;
-  image: string;
-  // Agrega otros campos según la API
-}
-
-interface ApiResponse {
-  info: {
-    pages: number;
-    // Otros campos si es necesario
-  };
-  results: Character[];
-}
+import { Character } from '../models/character.model';
 
 @Component({
   selector: 'app-inicio',
@@ -28,36 +12,42 @@ interface ApiResponse {
   styleUrls: ['./inicio.component.css']
 })
 export class InicioComponent implements OnInit {
-  allCharacters: Character[] = [];
-  displayedCharacters: Character[] = [];
-  currentApiPage: number = 1;
-  currentComponentPage: number = 1;
-  totalApiPages: number = 1;
-  totalComponentPages: number = 1;
-  pageSize: number = 10;
+  allCharacters: Character[] = [];       // Todos los personajes
+  filteredCharacters: Character[] = [];  // Personajes filtrados
+  paginatedCharacters: Character[] = []; // Personajes para la página actual
+
+  // Paginación
+  currentPage: number = 1;
+  pageSize: number = 10; // Número de elementos por página
+  totalPages: number = 1;
+
+  // Filtros y búsqueda
   searchText: string = '';
+  filtros: { estado: string; especie: string } = { estado: '', especie: '' };
+
+  // Modal
   showModal: boolean = false;
   modalAction: 'view' | 'edit' | 'delete' | null = null;
   selectedCharacter: Character | null = null;
 
-  // Propiedades para el usuario
+  // Usuario
   userName: string = '';
-  profilePictureUrl: string = 'assets/default-profile-picture.jpg'; // Imagen por defecto
+  profilePictureUrl: string = 'assets/default-profile-picture.jpg';
 
   constructor(
-    private http: HttpClient,
+    private characterService: CharacterService,
     private authService: AuthService,
     private router: Router
   ) {}
 
   ngOnInit(): void {
-    // Verificar si el usuario está autenticado
+    // Verificar autenticación
     if (!this.authService.isAuthenticated()) {
       this.router.navigate(['/login']);
       return;
     }
 
-    // Suscribirse al observable del usuario
+    // Obtener información del usuario
     this.authService.user$.subscribe(user => {
       if (user) {
         this.userName = user.name;
@@ -65,91 +55,91 @@ export class InicioComponent implements OnInit {
       }
     });
 
-    this.loadApiPage(this.currentApiPage);
-  }
-
-  loadApiPage(page: number): void {
-    const url = `https://rickandmortyapi.com/api/character?page=${page}`;
-    this.http.get<ApiResponse>(url).subscribe((response) => {
-      this.allCharacters = response.results;
-      this.totalApiPages = response.info.pages;
-      this.calculateComponentPages();
-      this.updateDisplayedCharacters();
-    }, error => {
-      console.error('Error al cargar los personajes:', error);
-    });
-  }
-
-  calculateComponentPages(): void {
-    this.totalComponentPages = this.totalApiPages * 2;
-  }
-
-  updateDisplayedCharacters(): void {
-    this.currentApiPage = Math.ceil(this.currentComponentPage / 2);
-    const isFirstHalf = this.currentComponentPage % 2 !== 0;
-    const startIndex = isFirstHalf ? 0 : 10;
-    const endIndex = isFirstHalf ? 10 : 20;
-
-    this.displayedCharacters = this.allCharacters.slice(startIndex, endIndex);
-  }
-
-  goToPage(page: number): void {
-    if (page >= 1 && page <= this.totalComponentPages) {
-      const newApiPage = Math.ceil(page / 2);
-      if (newApiPage !== this.currentApiPage) {
-        this.currentApiPage = newApiPage;
-        this.loadApiPage(newApiPage);
+    // Cargar todos los personajes
+    this.characterService.getAllCharacters().subscribe(
+      (characters) => {
+        this.allCharacters = characters;
+        this.applyFilters();
+      },
+      (error) => {
+        console.error('Error al cargar los personajes:', error);
       }
-      this.currentComponentPage = page;
-      this.updateDisplayedCharacters();
-    }
+    );
   }
 
+  // Aplicar filtros y búsqueda
+  applyFilters(): void {
+    this.filteredCharacters = this.allCharacters.filter(character => {
+      const matchesEstado = this.filtros.estado ? character.status.toLowerCase() === this.filtros.estado.toLowerCase() : true;
+      const matchesEspecie = this.filtros.especie ? character.species.toLowerCase() === this.filtros.especie.toLowerCase() : true;
+      const matchesSearch = this.searchText ? character.name.toLowerCase().includes(this.searchText.toLowerCase()) : true;
+      return matchesEstado && matchesEspecie && matchesSearch;
+    });
+
+    // Actualizar paginación
+    this.totalPages = Math.ceil(this.filteredCharacters.length / this.pageSize);
+    this.currentPage = 1;
+    this.updatePaginatedCharacters();
+  }
+
+  // Actualizar los personajes para la página actual
+  updatePaginatedCharacters(): void {
+    const startIndex = (this.currentPage - 1) * this.pageSize;
+    const endIndex = startIndex + this.pageSize;
+    this.paginatedCharacters = this.filteredCharacters.slice(startIndex, endIndex);
+  }
+
+  // Cambiar de página
+  goToPage(page: number): void {
+    if (page < 1 || page > this.totalPages) return;
+    this.currentPage = page;
+    this.updatePaginatedCharacters();
+  }
+
+  // Manejar cambios en la búsqueda
+  onSearchTextChanged(newSearchText: string): void {
+    this.searchText = newSearchText;
+    this.applyFilters();
+  }
+
+  // Manejar cambios en los filtros
+  onFiltersChanged(newFilters: { estado: string; especie: string }): void {
+    this.filtros = newFilters;
+    this.applyFilters();
+  }
+
+  // Abrir modal
   openModal(action: 'view' | 'edit' | 'delete', character: Character): void {
     this.modalAction = action;
-    this.selectedCharacter = { ...character }; // Clonar para evitar mutaciones directas
+    this.selectedCharacter = { ...character };
     this.showModal = true;
   }
 
+  // Cerrar modal
   closeModal(): void {
     this.modalAction = null;
     this.selectedCharacter = null;
     this.showModal = false;
   }
 
+  // Guardar cambios (solo interfaz)
   guardarCambios(): void {
-    if (this.modalAction === 'edit' && this.selectedCharacter) {
-      const index = this.allCharacters.findIndex(char => char.id === this.selectedCharacter!.id);
-      if (index !== -1) {
-        this.allCharacters[index] = { ...this.selectedCharacter };
-        this.updateDisplayedCharacters();
-        this.closeModal();
-      }
-    }
+    // Implementar lógica de guardado si es necesario
+    this.closeModal();
   }
 
+  // Eliminar personaje (solo interfaz)
   deleteCharacter(): void {
-    if (this.modalAction === 'delete' && this.selectedCharacter) {
-      this.allCharacters = this.allCharacters.filter(
-        (char) => char.id !== this.selectedCharacter!.id
-      );
-      this.updateDisplayedCharacters();
+    if (this.selectedCharacter) {
+      this.allCharacters = this.allCharacters.filter(char => char.id !== this.selectedCharacter!.id);
+      this.applyFilters();
       this.closeModal();
     }
   }
 
+  // Cerrar sesión
   logout(): void {
     this.authService.logout();
     this.router.navigate(['/login']);
-  }
-
-  // Getter para filtrar personajes según el texto de búsqueda
-  get filteredCharacters(): Character[] {
-    if (!this.searchText) {
-      return this.displayedCharacters;
-    }
-    return this.displayedCharacters.filter(character =>
-      character.name.toLowerCase().includes(this.searchText.toLowerCase())
-    );
   }
 }

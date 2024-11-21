@@ -1,15 +1,17 @@
 // auth.service.ts
 
-import { Injectable } from '@angular/core';
+import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, BehaviorSubject, of } from 'rxjs';
 import { map, catchError, switchMap } from 'rxjs/operators';
+import { isPlatformBrowser } from '@angular/common';
 
 export interface User {
   id: number;
   name: string;
   email: string;
   avatar: string;
+  // Agrega otros campos según la respuesta de la API
 }
 
 @Injectable({
@@ -22,18 +24,27 @@ export class AuthService {
   private userSubject = new BehaviorSubject<User | null>(null);
   public user$ = this.userSubject.asObservable();
 
-  constructor(private http: HttpClient) {
-    const token = localStorage.getItem('access_token');
-    if (token) {
-      this.getUserProfile().subscribe(
-        user => {
-          this.userSubject.next(user);
-        },
-        error => {
-          console.error('Error al obtener el perfil del usuario:', error);
-          this.logout();
-        }
-      );
+  constructor(
+    private http: HttpClient,
+    @Inject(PLATFORM_ID) private platformId: Object
+  ) {
+    if (isPlatformBrowser(this.platformId)) {
+      const token = localStorage.getItem('access_token');
+      if (token) {
+        this.getUserProfile().subscribe(
+          user => {
+            if (user) {
+              this.userSubject.next(user);
+            } else {
+              this.logout();
+            }
+          },
+          error => {
+            console.error('Error al obtener el perfil del usuario:', error);
+            this.logout();
+          }
+        );
+      }
     }
   }
 
@@ -41,7 +52,7 @@ export class AuthService {
     return this.http.post<{ access_token: string }>(this.loginUrl, { email, password })
       .pipe(
         switchMap(response => {
-          if (response && response.access_token) {
+          if (response && response.access_token && isPlatformBrowser(this.platformId)) {
             localStorage.setItem('access_token', response.access_token);
             return this.getUserProfile();
           }
@@ -61,10 +72,14 @@ export class AuthService {
       );
   }
 
-  getUserProfile(): Observable<User> {
+  getUserProfile(): Observable<User | null> {
+    if (!isPlatformBrowser(this.platformId)) {
+      return of(null); // No intentas obtener perfil en el servidor
+    }
+
     const token = localStorage.getItem('access_token');
     if (!token) {
-      return of(null as any); // Retorna un observable de null si no hay token
+      return of(null); // No hay token disponible
     }
 
     const headers = new HttpHeaders({
@@ -75,17 +90,22 @@ export class AuthService {
       .pipe(
         catchError(error => {
           console.error('Error al obtener el perfil del usuario:', error);
-          return of(null as any);
+          return of(null);
         })
       );
   }
 
   logout(): void {
-    localStorage.removeItem('access_token');
+    if (isPlatformBrowser(this.platformId)) {
+      localStorage.removeItem('access_token');
+    }
     this.userSubject.next(null);
   }
 
   isAuthenticated(): boolean {
-    return !!localStorage.getItem('access_token');
+    if (isPlatformBrowser(this.platformId)) {
+      return !!localStorage.getItem('access_token');
+    }
+    return false;
   }
 }
