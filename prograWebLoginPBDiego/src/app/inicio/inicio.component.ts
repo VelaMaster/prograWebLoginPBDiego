@@ -122,11 +122,28 @@ export class InicioComponent implements OnInit {
     this.showModal = false;
   }
 
-  // Guardar cambios (solo interfaz)
-  guardarCambios(): void {
-    // Implementar lógica de guardado si es necesario
-    this.closeModal();
+// inicio.component.ts
+
+guardarCambios(): void {
+  if (this.modalAction === 'edit' && this.selectedCharacter) {
+    // Encontrar el índice del personaje en allCharacters
+    const index = this.allCharacters.findIndex(char => char.id === this.selectedCharacter!.id);
+
+    if (index !== -1) {
+      // Actualizar el personaje en allCharacters con los nuevos datos
+      this.allCharacters[index] = { ...this.selectedCharacter };
+
+      // Reaplicar los filtros para actualizar la lista mostrada
+      this.applyFilters();
+
+      // Cerrar el modal
+      this.closeModal();
+    } else {
+      console.error('Personaje no encontrado en la lista.');
+    }
   }
+}
+
 
   // Eliminar personaje (solo interfaz)
   deleteCharacter(): void {
