@@ -1,5 +1,3 @@
-// auth.service.ts
-
 import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, BehaviorSubject, of } from 'rxjs';
@@ -11,7 +9,6 @@ export interface User {
   name: string;
   email: string;
   avatar: string;
-  // Agrega otros campos según la respuesta de la API
 }
 
 @Injectable({
@@ -19,7 +16,7 @@ export interface User {
 })
 export class AuthService {
   private loginUrl = 'https://api.escuelajs.co/api/v1/auth/login';
-  private profileUrl = 'https://api.escuelajs.co/api/v1/auth/profile'; // Asegúrate de que esta sea la URL correcta para obtener el perfil
+  private profileUrl = 'https://api.escuelajs.co/api/v1/auth/profile';
 
   private userSubject = new BehaviorSubject<User | null>(null);
   public user$ = this.userSubject.asObservable();
@@ -74,12 +71,12 @@ export class AuthService {
 
   getUserProfile(): Observable<User | null> {
     if (!isPlatformBrowser(this.platformId)) {
-      return of(null); // No intentas obtener perfil en el servidor
+      return of(null);
     }
 
     const token = localStorage.getItem('access_token');
     if (!token) {
-      return of(null); // No hay token disponible
+      return of(null);
     }
 
     const headers = new HttpHeaders({

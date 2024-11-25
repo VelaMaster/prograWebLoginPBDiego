@@ -1,5 +1,3 @@
-// src/app/inicio/inicio.component.ts
-
 import { Component, OnInit } from '@angular/core';
 import { CharacterService } from '../character.service';
 import { AuthService, User } from '../auth.service';
@@ -12,16 +10,16 @@ import { Character } from '../models/character.model';
   styleUrls: ['./inicio.component.css']
 })
 export class InicioComponent implements OnInit {
-  allCharacters: Character[] = [];       // Todos los personajes
-  filteredCharacters: Character[] = [];  // Personajes filtrados
+  allCharacters: Character[] = [];
+  filteredCharacters: Character[] = [];
   paginatedCharacters: Character[] = []; // Personajes para la página actual
 
   // Paginación
   currentPage: number = 1;
-  pageSize: number = 10; // Número de elementos por página
+  pageSize: number = 15;
   totalPages: number = 1;
 
-  // Filtros y búsqueda
+  // Filtros
   searchText: string = '';
   filtros: { estado: string; especie: string } = { estado: '', especie: '' };
 
@@ -66,7 +64,6 @@ export class InicioComponent implements OnInit {
       }
     );
   }
-
   // Aplicar filtros y búsqueda
   applyFilters(): void {
     this.filteredCharacters = this.allCharacters.filter(character => {
@@ -75,55 +72,46 @@ export class InicioComponent implements OnInit {
       const matchesSearch = this.searchText ? character.name.toLowerCase().includes(this.searchText.toLowerCase()) : true;
       return matchesEstado && matchesEspecie && matchesSearch;
     });
-
     // Actualizar paginación
     this.totalPages = Math.ceil(this.filteredCharacters.length / this.pageSize);
     this.currentPage = 1;
     this.updatePaginatedCharacters();
   }
-
   // Actualizar los personajes para la página actual
   updatePaginatedCharacters(): void {
     const startIndex = (this.currentPage - 1) * this.pageSize;
     const endIndex = startIndex + this.pageSize;
     this.paginatedCharacters = this.filteredCharacters.slice(startIndex, endIndex);
   }
-
   // Cambiar de página
   goToPage(page: number): void {
     if (page < 1 || page > this.totalPages) return;
     this.currentPage = page;
     this.updatePaginatedCharacters();
   }
-
   // Manejar cambios en la búsqueda
   onSearchTextChanged(newSearchText: string): void {
     this.searchText = newSearchText;
     this.applyFilters();
   }
-
   // Manejar cambios en los filtros
   onFiltersChanged(newFilters: { estado: string; especie: string }): void {
     this.filtros = newFilters;
     this.applyFilters();
   }
-
   // Abrir modal
   openModal(action: 'view' | 'edit' | 'delete', character: Character): void {
     this.modalAction = action;
     this.selectedCharacter = { ...character };
     this.showModal = true;
   }
-
   // Cerrar modal
   closeModal(): void {
     this.modalAction = null;
     this.selectedCharacter = null;
     this.showModal = false;
   }
-
 // inicio.component.ts
-
 guardarCambios(): void {
   if (this.modalAction === 'edit' && this.selectedCharacter) {
     // Encontrar el índice del personaje en allCharacters
@@ -143,8 +131,6 @@ guardarCambios(): void {
     }
   }
 }
-
-
   // Eliminar personaje (solo interfaz)
   deleteCharacter(): void {
     if (this.selectedCharacter) {
@@ -153,7 +139,6 @@ guardarCambios(): void {
       this.closeModal();
     }
   }
-
   // Cerrar sesión
   logout(): void {
     this.authService.logout();

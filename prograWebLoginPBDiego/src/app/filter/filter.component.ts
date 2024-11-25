@@ -1,8 +1,6 @@
-// src/app/filter/filter.component.ts
-
 import { Component, Output, EventEmitter, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Character } from '../models/character.model'; // Importa la interfaz
+import { Character } from '../models/character.model';
 
 @Component({
   selector: 'app-filter',
@@ -48,7 +46,7 @@ export class FilterComponent implements OnInit {
       },
       error => {
         console.error('Error al obtener especies:', error);
-        this.especies = ['Human', 'Alien', 'Robot', 'Mythological Creature', 'Unknown']; // Valores predeterminados
+        this.especies = ['Human', 'Alien', 'Robot', 'Humanoid','Mythological Creature', 'unknown'];
       }
     );
   }
