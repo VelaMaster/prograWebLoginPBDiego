@@ -23,7 +23,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "dist/progra-web-login-pbdiego",
+            "outputPath": "dist/",
             "index": "src/index.html",
             "browser": "src/main.ts",
             "polyfills": [
@@ -41,6 +41,7 @@
               "src/styles.css"
             ],
             "scripts": [],
+            "baseHref": "/prograWebLoginPBDiego/",
             "server": "src/main.server.ts",
             "prerender": true,
             "ssr": {
