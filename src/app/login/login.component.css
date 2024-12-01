@@ -1,0 +1,107 @@
+body{
+  background-color: #f5c6cb;
+}
+/* Centra el contenedor en la pantalla */
+.login-container {
+  max-width: 400px;
+  margin: 100px auto;
+  padding: 40px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  background-color: #f9f9f9;
+}
+
+.login-container h2 {
+  font-size: 2.5rem;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.login-container label {
+  font-size: 1.5rem;
+  color: #555;
+  display: block;
+  margin-top: 15px;
+}
+
+.login-container input[type="text"],
+.login-container input[type="password"] {
+  width: 90%;
+  padding: 10px;
+  margin-top: 10px;
+  font-size: 1.5rem;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+.login-container button {
+  width: 100%;
+  padding: 15px;
+  font-size: 1.5rem;
+  color: #fff;
+  background-color: #ffd000;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 20px;
+  transition: background-color 0.3s;
+}
+
+.login-container button:hover {
+  background-color: #ffee00;
+}
+/* Estilos para el contenedor de login */
+.login-container {
+  max-width: 400px;
+  margin: 100px auto;
+  padding: 40px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  background-color: #f9f9f9;
+}
+
+/* Contenedor del mensaje emergente */
+.error-popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* Fondo oscuro semi-transparente */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000; /* Asegura que esté sobre otros elementos */
+}
+
+.error-popup {
+  background-color: #f8d7da;
+  color: #721c24;
+  padding: 20px;
+  border: 1px solid #f5c6cb;
+  border-radius: 8px;
+  text-align: center;
+  width: 300px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
+}
+
+.error-popup p {
+  margin: 0 0 10px;
+}
+
+.error-popup button {
+  padding: 10px 20px;
+  font-size: 1rem;
+  color: #ffffff;
+  background-color: #721c24;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.error-popup button:hover {
+  background-color: #5a1d1d;
+}
